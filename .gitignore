@@ -1,0 +1,22 @@
+# --- Maven (Compilación) ---
+# Ignoramos la carpeta donde se generan los .class y el JAR
+target/
+
+# --- Java (Archivos temporales) ---
+*.class
+
+# --- Logs del sistema y errores ---
+*.log
+.xsession-errors
+
+# --- Configuración local y sensible ---
+# Aquí guardaremos la API Key más adelante para que no se suba a internet
+.env
+config.properties
+
+# --- Archivos temporales de Editores de Terminal ---
+# Ignora archivos temporales de Nano y Vim
+.*.swp
+.*.swo
+.sw?
+*~
