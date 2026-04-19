@@ -1,9 +1,9 @@
 # 🖥️ RaspberryDashboard
 
-[![Java](https://img.shields.io/badge/Java-17-orange?style=flat&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
-[![Maven](https://img.shields.io/badge/Maven-3.8.1-red?style=flat&logo=apache-maven&logoColor=white)](https://maven.apache.org/)
-[![JavaFX](https://img.shields.io/badge/JavaFX-17-blue?style=flat&logo=java&logoColor=white)](https://openjfx.io/)
-[![AtlantaFX](https://img.shields.io/badge/Theme-AtlantaFX-blueviolet?style=flat)](https://github.com/mkpaz/atlantafx)
+[![Java](https://img.shields.io/badge/Java-17-grey?style=flat&logo=openjdk&logoColor=white&labelColor=orange)](https://www.oracle.com/java/)
+[![Maven](https://img.shields.io/badge/Maven-3.8.1-grey?style=flat&logo=apache-maven&logoColor=white&labelColor=red)](https://maven.apache.org/)
+[![JavaFX](https://img.shields.io/badge/JavaFX-17-grey?style=flat&logo=java&logoColor=white&labelColor=blue)](https://openjfx.io/)
+[![AtlantaFX](https://img.shields.io/badge/Theme-AtlantaFX-grey?style=flat&logo=java&logoColor=white&labelColor=blueviolet)](https://github.com/mkpaz/atlantafx)
 
 A modern, full-featured system dashboard built for Raspberry Pi with the official touchscreen. Displays real-time system metrics and environmental data through a clean, touch-friendly interface with automatic brightness control.
 
