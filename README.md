@@ -110,3 +110,9 @@ RaspberryDashboard/
 ├── launch_dashboard.sh      # Bash script that sets up the graphical environment and launches the app
 └── pom.xml                  # Maven configuration with native dependencies for Linux-ARM
 ```
+
+---
+
+## 👀 Dashboard
+
+<img src="https://github.com/Jsanzo97/RaspberryDashboard/blob/main/images/dashboard_screenshot.png">
