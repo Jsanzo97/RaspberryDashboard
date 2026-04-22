@@ -17,20 +17,26 @@ A modern, full-featured system dashboard built for Raspberry Pi with the officia
 - **Network & IP**: Card displaying the current network interface and assigned IP address.
 
 ### 📊 System Monitoring
-- **CPU Load**: Real-time processor usage indicator.
+- **CPU Load**: Real-time processor usage with progress bar.
 - **CPU Temperature**: Live thermal readout of the device's processor.
-- **RAM Usage**: Current memory consumption at a glance.
-- **Swap Usage**: Tracks swap space utilization.
-- **Storage Usage**: Monitors disk usage on the main partition.
+- **RAM Usage**: Memory consumption with usage bar (`used / total GB`).
+- **Swap Usage**: Swap space utilization with progress bar.
+- **Storage Usage**: Disk usage on the main partition with progress bar.
 
 ### 🌡️ Environmental Sensors
 - **Ambient Temperature**: Room temperature readout from an external sensor.
 - **Ambient Humidity**: Current relative humidity from an external sensor.
 
+### 🌤️ Weather Widget
+- **Current Temperature**: Live outdoor temperature from OpenWeatherMap.
+- **Daily High / Low**: Max shown in red, min shown in blue, alongside the weather icon.
+- **Wind Speed**: Current wind speed in km/h.
+- **Weather Icon**: Condition icon updated every 15 minutes.
+
 ### ⚙️ Application
 - **Ultra-Fast Startup**: Optimized Fat JAR execution eliminates Maven overhead at launch.
 - **Brightness Management**: Automatic screen brightness adjustment (`rpi_backlight`) based on time of day.
-- **Modern UI**: **AtlantaFX** implementation for a high-end look & feel.
+- **Modern UI**: **AtlantaFX** (PrimerDark) for a high-end look & feel.
 - **Autostart**: Bash script configured to launch automatically when the desktop starts.
 - **Standalone**: Bundles all required dependencies and native binaries for ARM architectures.
 
@@ -41,7 +47,8 @@ A modern, full-featured system dashboard built for Raspberry Pi with the officia
 - **Language**: Java 17
 - **GUI Framework**: JavaFX 17
 - **Dependency Manager**: Maven
-- **Styling**: AtlantaFX (Modern CSS themes)
+- **Styling**: AtlantaFX — PrimerDark theme
+- **Weather API**: OpenWeatherMap (requires API key)
 - **Hardware Target**: Raspberry Pi (with `backlight` support via `/sys/class/backlight/`)
 
 ---
@@ -57,7 +64,14 @@ git clone https://github.com/Jsanzo97/RaspberryDashboard.git
 cd RaspberryDashboard
 ```
 
-**2. Build the project (Generate JAR):**
+**2. Set up your environment variables** by creating a `.env` file in the project root:
+
+```env
+OPENWEATHER_API_KEY=your_api_key_here
+WEATHER_CITY=YourCity
+```
+
+**3. Build the project (Generate JAR):**
 
 ```bash
 mvn clean package
@@ -65,7 +79,7 @@ mvn clean package
 
 This will generate `dashboard-rpi-1.0-SNAPSHOT-jar-with-dependencies.jar` inside the `target/` folder.
 
-**3. Run manually:**
+**4. Run manually:**
 
 ```bash
 ./launch_dashboard.sh
@@ -108,6 +122,7 @@ RaspberryDashboard/
 │   ├── Dashboard.java       # Main class with UI logic and brightness control
 │   └── Main.java            # Entry launcher for Fat JAR compatibility
 ├── launch_dashboard.sh      # Bash script that sets up the graphical environment and launches the app
+├── .env                     # API key and city config (not committed)
 └── pom.xml                  # Maven configuration with native dependencies for Linux-ARM
 ```
 
