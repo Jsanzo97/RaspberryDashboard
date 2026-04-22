@@ -68,8 +68,10 @@ cd RaspberryDashboard
 
 ```env
 OPENWEATHER_API_KEY=your_api_key_here
-WEATHER_CITY=YourCity
+WEATHER_CITY=YourCity,ES
 ```
+
+> The city name supports the `City,CountryCode` format from OpenWeatherMap. The country code is used for the API call but stripped from the display label automatically.
 
 **3. Build the project (Generate JAR):**
 
@@ -119,11 +121,19 @@ Exec=/home/pi/your-path/launch_dashboard.sh
 ```
 RaspberryDashboard/
 ├── src/main/java/
-│   ├── Dashboard.java       # Main class with UI logic and brightness control
-│   └── Main.java            # Entry launcher for Fat JAR compatibility
-├── launch_dashboard.sh      # Bash script that sets up the graphical environment and launches the app
-├── .env                     # API key and city config (not committed)
-└── pom.xml                  # Maven configuration with native dependencies for Linux-ARM
+│   ├── Dashboard.java              # App entry point, layout orchestration and timeline
+│   ├── Main.java                   # Entry launcher for Fat JAR compatibility
+│   ├── model/
+│   │   └── WeatherData.java        # Immutable data class for weather API response
+│   ├── service/
+│   │   ├── SystemService.java      # System reads: CPU, RAM, SWAP, disk, temperature, uptime, IP
+│   │   └── WeatherService.java     # OpenWeatherMap HTTP call and JSON parsing
+│   └── ui/
+│       ├── TileFactory.java        # Static factory for metric and progress tiles
+│       └── WeatherWidget.java      # Weather widget — builds and updates the top-right VBox
+├── launch_dashboard.sh             # Bash script that sets up the graphical environment and launches the app
+├── .env                            # API key and city config (not committed)
+└── pom.xml                         # Maven configuration with native dependencies for Linux-ARM
 ```
 
 ---
