@@ -13,41 +13,34 @@ public class WeatherWidget {
 
     private final Label lblTemp    = new Label("--°C");
     private final Label lblWind    = new Label("-- km/h");
-    private final Label lblCity;
     private final Label lblMax     = new Label("--°C");
     private final Label lblMin     = new Label("--°C");
     private final ImageView icon   = new ImageView();
 
     private final VBox root;
 
-    public WeatherWidget(String cityName) {
-        this.lblCity = new Label(cityName);
-
-        icon.setFitWidth(45);
-        icon.setPreserveRatio(true);
-
-        lblTemp.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: -color-fg-default;");
-        lblTemp.setPadding(new Insets(0, 4, 0, 0));
-
+    public WeatherWidget() {
+        lblTemp.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: -color-fg-default;");
         lblWind.setStyle("-fx-font-size: 12px; -fx-text-fill: white;");
-        lblWind.setPadding(new Insets(0, 4, 0, 0));
-
-        lblCity.setStyle("-fx-font-size: 11px; -fx-opacity: 0.6; -fx-font-weight: bold;");
-        lblCity.setPadding(new Insets(0, 4, 0, 0));
 
         lblMax.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #e05c5c;");
+        lblMax.setMaxWidth(Double.MAX_VALUE);
+        lblMax.setAlignment(Pos.CENTER_RIGHT);
+
         lblMin.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #6ab0f5;");
+        lblMin.setMaxWidth(Double.MAX_VALUE);
+        lblMin.setAlignment(Pos.CENTER_RIGHT);
 
-        VBox maxMinCol = new VBox(6, lblMax, lblMin);
-        maxMinCol.setAlignment(Pos.CENTER);
-        maxMinCol.setPrefHeight(45);
-        maxMinCol.setMaxHeight(45);
-        maxMinCol.setPadding(new Insets(0, 4, 0, 0));
+        VBox maxMinCol = new VBox(lblMax, lblMin);
+        maxMinCol.setAlignment(Pos.TOP_RIGHT);
 
-        HBox iconRow = new HBox(4, icon, maxMinCol);
+        HBox iconRow = new HBox(icon, maxMinCol);
         iconRow.setAlignment(Pos.CENTER_RIGHT);
 
-        root = new VBox(iconRow, lblTemp, lblWind, lblCity);
+        icon.fitHeightProperty().bind(maxMinCol.heightProperty());
+        icon.setPreserveRatio(true);
+
+        root = new VBox(iconRow, lblTemp, lblWind);
         root.setAlignment(Pos.TOP_RIGHT);
         root.setPadding(new Insets(8, 8, 0, 0));
     }
@@ -60,9 +53,28 @@ public class WeatherWidget {
     /** Updates all labels and icon. Must be called on the JavaFX Application Thread. */
     public void update(WeatherData data) {
         lblTemp.setText(String.format("%.0f°C", data.temp));
-        lblWind.setText(String.format("💨 %.0f km/h", data.windKmh));
         lblMax.setText(String.format("%.0f°C", data.tempMax));
         lblMin.setText(String.format("%.0f°C", data.tempMin));
         icon.setImage(new Image("https://openweathermap.org/img/wn/" + data.iconCode + "@2x.png"));
+        
+        updateWind(data.windKmh);
+    }
+
+    private void updateWind(double speed) {
+        String color;
+        if (speed <= 15) {
+            color = "#4ade80";
+        } else if (speed <= 30) {
+            color = "#facc15";
+        } else if (speed <= 50) {
+            color = "#fb923c";
+        } else if (speed <= 70) {
+            color = "#f87171";
+        } else {
+            color = "#a855f7";
+        }
+
+        lblWind.setText(String.format("💨 %.0f km/h", speed));
+        lblWind.setStyle("-fx-font-size: 12px; -fx-text-fill: " + color + ";");
     }
 }
