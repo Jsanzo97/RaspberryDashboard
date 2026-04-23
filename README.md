@@ -27,16 +27,16 @@ A modern, full-featured system dashboard built for Raspberry Pi with the officia
 - **Ambient Temperature**: Room temperature readout from an external sensor.
 - **Ambient Humidity**: Current relative humidity from an external sensor.
 
-### 🌤️ Weather Widget *(top-right)*
+### 🌤️ Weather Widget
 - **Current Temperature**: Live outdoor temperature from OpenWeatherMap.
 - **Daily High / Low**: Max shown in red, min shown in blue, alongside a dynamic weather icon.
-- **Wind Speed**: Color-coded by intensity — green (calm) through purple (storm).
+- **Wind Speed**: Color-coded by intensity
 - **Auto-refresh**: Weather data updated every 15 minutes.
 
-### 📶 Network Widget *(top-left)*
+### 📶 Network Widget
 - **Upload Speed**: Updated every second, shown in red.
 - **Download Speed**: Updated every second, shown in blue.
-- **WiFi Signal Quality**: Reads RSSI from `/proc/net/wireless` and displays a color-coded label — Maximum · Excelent · Good · Bad · Very bad.
+- **WiFi Signal Quality**: Reads RSSI from `/proc/net/wireless` and displays a color-coded label by quality
 
 ### ⚙️ Application
 - **Ultra-Fast Startup**: Optimized Fat JAR execution eliminates Maven overhead at launch.
