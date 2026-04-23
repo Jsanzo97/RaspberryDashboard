@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 
@@ -17,19 +18,19 @@ public class NetworkWidget {
 
     public NetworkWidget() {
         lblInterface.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: -color-fg-default;");
-        lblInterface.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        lblInterface.setAlignment(Pos.CENTER_LEFT);
         lblInterface.setMaxWidth(Double.MAX_VALUE);
 
         lblUp.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #e05c5c;");
-        lblUp.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        lblUp.setAlignment(Pos.CENTER_LEFT);
         lblUp.setMaxWidth(Double.MAX_VALUE);
 
         lblDown.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #6ab0f5;");
-        lblDown.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        lblDown.setAlignment(Pos.CENTER_LEFT);
         lblDown.setMaxWidth(Double.MAX_VALUE);
 
         lblSignal.setStyle("-fx-font-size: 12px; -fx-text-fill: #a0a0a0;");
-        lblSignal.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        lblSignal.setAlignment(Pos.CENTER_LEFT);
         lblSignal.setMaxWidth(Double.MAX_VALUE);
 
         root = new VBox(lblInterface, lblUp, lblDown, lblSignal);
@@ -41,7 +42,6 @@ public class NetworkWidget {
         return root;
     }
 
-    /** Updates upload and download speed labels. Call from JavaFX thread. */
     public void update(double uploadBytesPerSec, double downloadBytesPerSec) {
         lblUp.setText("↑  " + formatSpeed(uploadBytesPerSec));
         lblDown.setText("↓  " + formatSpeed(downloadBytesPerSec));
@@ -50,32 +50,19 @@ public class NetworkWidget {
 
     private void updateSignalQuality() {
         int dbm = getWifiRSSI();
-        
         if (dbm == 0) {
             lblSignal.setText("📡  Desconectado");
             lblSignal.setStyle("-fx-font-size: 11px; -fx-text-fill: #666666;");
             return;
         }
 
+        String color = ColorScale.forSignal(dbm);
         String quality;
-        String color;
-
-        if (dbm >= -50) {
-            quality = "Máxima";
-            color = "#4ade80";
-        } else if (dbm >= -60) {
-            quality = "Excelente";
-            color = "#a3e635";
-        } else if (dbm >= -70) {
-            quality = "Buena";
-            color = "#facc15";
-        } else if (dbm >= -80) {
-            quality = "Mala";
-            color = "#fb923c";
-        } else {
-            quality = "Muy Mala";
-            color = "#f87171";
-        }
+        if (dbm >= -50)       quality = "Máxima";
+        else if (dbm >= -60)  quality = "Excelente";
+        else if (dbm >= -70)  quality = "Buena";
+        else if (dbm >= -80)  quality = "Mala";
+        else                  quality = "Muy Mala";
 
         lblSignal.setText("📡  " + quality);
         lblSignal.setStyle("-fx-font-size: 11px; -fx-text-fill: " + color + ";");
@@ -90,9 +77,7 @@ public class NetworkWidget {
                     return (int) Double.parseDouble(parts[3]);
                 }
             }
-        } catch (Exception e) {
-            return 0;
-        }
+        } catch (Exception ignored) { }
         return 0;
     }
 
