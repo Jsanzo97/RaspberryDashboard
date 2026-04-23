@@ -98,4 +98,53 @@ public class SystemService {
             fw.write(String.valueOf(value));
         } catch (IOException ignored) { }
     }
+    // Stores previous sample for delta calculation
+    private long lastRxBytes = -1;
+    private long lastTxBytes = -1;
+    private long lastSampleTime = -1;
+
+    /**
+     * Returns {uploadBytesPerSec, downloadBytesPerSec} since last call.
+     * First call returns {0, 0} as it establishes the baseline.
+     */
+    public double[] getNetworkSpeed() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("/proc/net/dev"))) {
+            String line;
+            long rxBytes = 0, txBytes = 0;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                // Skip loopback and header lines
+                if (line.startsWith("lo:") || !line.contains(":")) continue;
+
+                String[] parts = line.split(":\\s*|\\s+");
+                // parts[0]=iface, parts[1]=rx_bytes, parts[9]=tx_bytes
+                if (parts.length >= 10) {
+                    rxBytes += Long.parseLong(parts[1]);
+                    txBytes += Long.parseLong(parts[9]);
+                }
+            }
+
+            long now = System.currentTimeMillis();
+
+            if (lastSampleTime < 0) {
+                // First call — establish baseline
+                lastRxBytes = rxBytes;
+                lastTxBytes = txBytes;
+                lastSampleTime = now;
+                return new double[]{ 0, 0 };
+            }
+
+            double elapsed = (now - lastSampleTime) / 1000.0;
+            double upload   = (txBytes - lastTxBytes) / elapsed;
+            double download = (rxBytes - lastRxBytes) / elapsed;
+
+            lastRxBytes    = rxBytes;
+            lastTxBytes    = txBytes;
+            lastSampleTime = now;
+
+            return new double[]{ Math.max(0, upload), Math.max(0, download) };
+
+        } catch (Exception e) { return new double[]{ 0, 0 }; }
+    }
 }

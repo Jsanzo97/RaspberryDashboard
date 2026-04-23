@@ -12,12 +12,12 @@ A modern, full-featured system dashboard built for Raspberry Pi with the officia
 ## 🚀 Features
 
 ### 🕐 Clock & System Info
-- **Live Clock**: Always-visible current time display.
+- **Live Clock**: Always-visible current time display, updated every second.
 - **System Uptime**: Card showing how long the device has been running.
 - **Network & IP**: Card displaying the current network interface and assigned IP address.
 
 ### 📊 System Monitoring
-- **CPU Load**: Real-time processor usage with progress bar.
+- **CPU Load**: Real-time processor usage with progress bar, updated every second.
 - **CPU Temperature**: Live thermal readout of the device's processor.
 - **RAM Usage**: Memory consumption with usage bar (`used / total GB`).
 - **Swap Usage**: Swap space utilization with progress bar.
@@ -27,11 +27,16 @@ A modern, full-featured system dashboard built for Raspberry Pi with the officia
 - **Ambient Temperature**: Room temperature readout from an external sensor.
 - **Ambient Humidity**: Current relative humidity from an external sensor.
 
-### 🌤️ Weather Widget
+### 🌤️ Weather Widget *(top-right)*
 - **Current Temperature**: Live outdoor temperature from OpenWeatherMap.
-- **Daily High / Low**: Max shown in red, min shown in blue, alongside the weather icon.
-- **Wind Speed**: Current wind speed in km/h.
-- **Weather Icon**: Condition icon updated every 15 minutes.
+- **Daily High / Low**: Max shown in red, min shown in blue, alongside a dynamic weather icon.
+- **Wind Speed**: Color-coded by intensity — green (calm) through purple (storm).
+- **Auto-refresh**: Weather data updated every 15 minutes.
+
+### 📶 Network Widget *(top-left)*
+- **Upload Speed**: Updated every second, shown in red.
+- **Download Speed**: Updated every second, shown in blue.
+- **WiFi Signal Quality**: Reads RSSI from `/proc/net/wireless` and displays a color-coded label — Maximum · Excelent · Good · Bad · Very bad.
 
 ### ⚙️ Application
 - **Ultra-Fast Startup**: Optimized Fat JAR execution eliminates Maven overhead at launch.
@@ -48,7 +53,7 @@ A modern, full-featured system dashboard built for Raspberry Pi with the officia
 - **GUI Framework**: JavaFX 17
 - **Dependency Manager**: Maven
 - **Styling**: AtlantaFX — PrimerDark theme
-- **Weather API**: OpenWeatherMap (requires API key)
+- **Weather API**: OpenWeatherMap One Call 3.0 (requires API key)
 - **Hardware Target**: Raspberry Pi (with `backlight` support via `/sys/class/backlight/`)
 
 ---
@@ -126,11 +131,12 @@ RaspberryDashboard/
 │   ├── model/
 │   │   └── WeatherData.java        # Immutable data class for weather API response
 │   ├── service/
-│   │   ├── SystemService.java      # System reads: CPU, RAM, SWAP, disk, temperature, uptime, IP
-│   │   └── WeatherService.java     # OpenWeatherMap HTTP call and JSON parsing
+│   │   ├── SystemService.java      # System reads: CPU, RAM, SWAP, disk, temperature, uptime, IP, network speed
+│   │   └── WeatherService.java     # OpenWeatherMap Geocoding + One Call 3.0 HTTP client
 │   └── ui/
 │       ├── TileFactory.java        # Static factory for metric and progress tiles
-│       └── WeatherWidget.java      # Weather widget — builds and updates the top-right VBox
+│       ├── WeatherWidget.java      # Top-right widget: temperature, wind, daily high/low
+│       └── NetworkWidget.java      # Top-left widget: upload/download speed and WiFi signal quality
 ├── launch_dashboard.sh             # Bash script that sets up the graphical environment and launches the app
 ├── .env                            # API key and city config (not committed)
 └── pom.xml                         # Maven configuration with native dependencies for Linux-ARM
