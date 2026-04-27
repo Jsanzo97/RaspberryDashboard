@@ -16,6 +16,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import model.WeatherData;
 import service.SystemService;
+import service.DhtService;
 import service.WeatherService;
 import ui.NetworkWidget;
 import ui.TileFactory;
@@ -51,6 +52,7 @@ public class Dashboard extends Application {
     private WeatherWidget  weatherWidget;
     private WeatherService weatherService;
     private NetworkWidget  networkWidget;
+    private DhtService     dhtService;
     private GridPane grid;
 
     private int tickCount  = 0;
@@ -68,6 +70,7 @@ public class Dashboard extends Application {
         );
         weatherWidget = new WeatherWidget();
         networkWidget = new NetworkWidget();
+        dhtService    = new DhtService();
 
         Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
         stage.initStyle(StageStyle.UNDECORATED);
@@ -96,6 +99,10 @@ public class Dashboard extends Application {
         stage.setFullScreenExitHint("");
         stage.show();
 
+        dhtService.start((temp, humidity) -> Platform.runLater(() -> {
+            lblAmbTemp.setText(String.format("%.1f°C", temp));
+            lblHumidity.setText(String.format("%.1f%%", humidity));
+        }));
         refreshSystemData();
         refreshNetwork();
         refreshWeather();
@@ -111,7 +118,7 @@ public class Dashboard extends Application {
         grid.setHgap(12);
         grid.setVgap(10);
         grid.setAlignment(Pos.CENTER);
-        grid.setPadding(new Insets(24, 64, 16, 64));
+        grid.setPadding(new Insets(16, 64, 16, 64));
         grid.setPrefSize(800, 400);
 
         ColumnConstraints col = new ColumnConstraints();
@@ -244,6 +251,7 @@ public class Dashboard extends Application {
     @Override
     public void stop() {
         executor.shutdownNow();
+        dhtService.stop();
     }
 
     public static void main(String[] args) { launch(args); }
