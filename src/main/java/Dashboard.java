@@ -15,8 +15,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import model.WeatherData;
-import service.SystemService;
 import service.DhtService;
+import service.SystemService;
 import service.WeatherService;
 import ui.NetworkWidget;
 import ui.TileFactory;
@@ -55,6 +55,13 @@ public class Dashboard extends Application {
     private DhtService     dhtService;
     private GridPane grid;
 
+    // --- Screen config (reloaded from .env every 5 min) ---
+    private int screenOnHour;
+    private int screenOffHour;
+    private int screenDimStart;
+    private int screenBright;
+    private int screenDim;
+
     private int tickCount  = 0;
     private int lastBright = -1;
 
@@ -63,6 +70,7 @@ public class Dashboard extends Application {
     @Override
     public void start(Stage stage) {
         Dotenv dotenv = Dotenv.load();
+        loadScreenConfig(dotenv);
 
         weatherService = new WeatherService(
                 dotenv.get("OPENWEATHER_API_KEY"),
@@ -143,8 +151,8 @@ public class Dashboard extends Application {
 
         // Row 2
         grid.add(TileFactory.metricTile("Temp. Dispositivo", lblCpuTemp  = new Label("0°C"),                "🖥️"), 0, 2);
-        grid.add(TileFactory.metricTile("Temp. Ambiente",    lblAmbTemp  = new Label("22.0°C"),             "🌡️"), 1, 2);
-        grid.add(TileFactory.metricTile("Humedad Rel.",      lblHumidity = new Label("45%"),                "💧"), 2, 2);
+        grid.add(TileFactory.metricTile("Temp. Ambiente",    lblAmbTemp  = new Label("--°C"),               "🌡️"), 1, 2);
+        grid.add(TileFactory.metricTile("Humedad Rel.",      lblHumidity = new Label("--%"),                "💧"), 2, 2);
 
         // Row 3
         grid.add(TileFactory.progressTile("Memoria RAM",     lblRam      = new Label("0/0 GB"),             progressRam  = new ProgressBar(0), "📊"), 0, 3);
@@ -177,6 +185,7 @@ public class Dashboard extends Application {
                 lblTime.setText(LocalDateTime.now().format(TIME_FORMAT));
                 tickCount++;
                 if (tickCount % 30  == 0) refreshSystemData();
+                if (tickCount % 300 == 0) reloadScreenConfig();
                 refreshCpu();
                 refreshNetwork();
                 if (tickCount % 900 == 0) { refreshWeather(); tickCount = 0; }
@@ -187,10 +196,29 @@ public class Dashboard extends Application {
     }
 
     private int brightnessForHour(int hour) {
-        if (hour < 8)       return 0;
-        else if (hour < 10) return 100;
-        else if (hour < 21) return 150;
-        else                return 100;
+        if (hour >= screenOnHour && hour < screenDimStart)  return screenBright;
+        if (hour >= screenDimStart || hour < screenOffHour) return screenDim;
+        return 0;
+    }
+
+    // -------------------------------------------------------------------------
+    // Config
+    // -------------------------------------------------------------------------
+
+    private void loadScreenConfig(Dotenv dotenv) {
+        screenOnHour   = Integer.parseInt(dotenv.get("SCREEN_ON_HOUR",   "8"));
+        screenOffHour  = Integer.parseInt(dotenv.get("SCREEN_OFF_HOUR",  "0"));
+        screenDimStart = Integer.parseInt(dotenv.get("SCREEN_DIM_START", "21"));
+        screenBright   = Integer.parseInt(dotenv.get("SCREEN_BRIGHT",    "150"));
+        screenDim      = Integer.parseInt(dotenv.get("SCREEN_DIM",       "100"));
+    }
+
+    private void reloadScreenConfig() {
+        try {
+            loadScreenConfig(Dotenv.load());
+        } catch (Exception e) {
+            System.err.println("Failed to reload .env: " + e.getMessage());
+        }
     }
 
     // -------------------------------------------------------------------------
