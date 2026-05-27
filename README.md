@@ -40,7 +40,7 @@ A modern, full-featured system dashboard built for Raspberry Pi with the officia
 
 ### ⚙️ Application
 - **Ultra-Fast Startup**: Optimized Fat JAR execution eliminates Maven overhead at launch.
-- **Brightness Management**: Automatic screen brightness adjustment (`rpi_backlight`) based on time of day.
+- **Brightness Management**: Configurable screen brightness schedule via `.env` — full brightness, dimmed, and off hours are all adjustable without touching the code. Settings are reloaded automatically every 5 minutes.
 - **Modern UI**: **AtlantaFX** (PrimerDark) for a high-end look & feel.
 - **Autostart**: Bash script configured to launch automatically when the desktop starts.
 - **Standalone**: Bundles all required dependencies and native binaries for ARM architectures.
@@ -81,7 +81,14 @@ pip3 install adafruit-circuitpython-dht
 ```env
 OPENWEATHER_API_KEY=your_api_key_here
 WEATHER_CITY=YourCity,ES
+SCREEN_ON_HOUR=8
+SCREEN_OFF_HOUR=0
+SCREEN_DIM_START=21
+SCREEN_BRIGHT=150
+SCREEN_DIM=100
 ```
+
+> The city name supports the `City,CountryCode` format from OpenWeatherMap. The country code is used for the API call but stripped from the display label automatically.
 
 **4. Build the project (Generate JAR):**
 
@@ -144,7 +151,7 @@ RaspberryDashboard/
 │       ├── TileFactory.java        # Static factory for metric and progress tiles
 │       ├── WeatherWidget.java      # Top-right widget: temperature, wind, daily high/low
 │       └── NetworkWidget.java      # Top-left widget: upload/download speed and WiFi signal quality
-├── dht22.py                        # Python script that reads the DHT22 sensor
+├── dht22.py                   # Python script that reads the DHT22 sensor
 ├── launch_dashboard.sh             # Bash script that sets up the graphical environment and launches the app
 ├── .env                            # API key and city config (not committed)
 └── pom.xml                         # Maven configuration with native dependencies for Linux-ARM
