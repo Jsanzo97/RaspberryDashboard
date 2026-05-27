@@ -24,19 +24,19 @@ A modern, full-featured system dashboard built for Raspberry Pi with the officia
 - **Storage Usage**: Disk usage on the main partition with progress bar.
 
 ### 🌡️ Environmental Sensors
-- **Ambient Temperature**: Room temperature readout from an external sensor.
-- **Ambient Humidity**: Current relative humidity from an external sensor.
+- **Ambient Temperature**: Room temperature from a DHT22 sensor, updated every ~2 seconds.
+- **Ambient Humidity**: Relative humidity from a DHT22 sensor, updated every ~2 seconds.
 
 ### 🌤️ Weather Widget
 - **Current Temperature**: Live outdoor temperature from OpenWeatherMap.
 - **Daily High / Low**: Max shown in red, min shown in blue, alongside a dynamic weather icon.
-- **Wind Speed**: Color-coded by intensity
+- **Wind Speed**: Color-coded by intensity.
 - **Auto-refresh**: Weather data updated every 15 minutes.
 
 ### 📶 Network Widget
 - **Upload Speed**: Updated every second, shown in red.
 - **Download Speed**: Updated every second, shown in blue.
-- **WiFi Signal Quality**: Reads RSSI from `/proc/net/wireless` and displays a color-coded label by quality
+- **WiFi Signal Quality**: Reads RSSI from `/proc/net/wireless` and displays a color-coded label by quality.
 
 ### ⚙️ Application
 - **Ultra-Fast Startup**: Optimized Fat JAR execution eliminates Maven overhead at launch.
@@ -54,6 +54,7 @@ A modern, full-featured system dashboard built for Raspberry Pi with the officia
 - **Dependency Manager**: Maven
 - **Styling**: AtlantaFX — PrimerDark theme
 - **Weather API**: OpenWeatherMap One Call 3.0 (requires API key)
+- **Sensor**: DHT22 via Python 3 + Adafruit CircuitPython library
 - **Hardware Target**: Raspberry Pi (with `backlight` support via `/sys/class/backlight/`)
 
 ---
@@ -69,16 +70,20 @@ git clone https://github.com/Jsanzo97/RaspberryDashboard.git
 cd RaspberryDashboard
 ```
 
-**2. Set up your environment variables** by creating a `.env` file in the project root:
+**2. Install the DHT22 Python dependency:**
+
+```bash
+pip3 install adafruit-circuitpython-dht
+```
+
+**3. Set up your environment variables** by creating a `.env` file in the project root:
 
 ```env
 OPENWEATHER_API_KEY=your_api_key_here
 WEATHER_CITY=YourCity,ES
 ```
 
-> The city name supports the `City,CountryCode` format from OpenWeatherMap. The country code is used for the API call but stripped from the display label automatically.
-
-**3. Build the project (Generate JAR):**
+**4. Build the project (Generate JAR):**
 
 ```bash
 mvn clean package
@@ -86,7 +91,7 @@ mvn clean package
 
 This will generate `dashboard-rpi-1.0-SNAPSHOT-jar-with-dependencies.jar` inside the `target/` folder.
 
-**4. Run manually:**
+**5. Run manually:**
 
 ```bash
 ./launch_dashboard.sh
@@ -131,12 +136,15 @@ RaspberryDashboard/
 │   ├── model/
 │   │   └── WeatherData.java        # Immutable data class for weather API response
 │   ├── service/
+│   │   ├── DhtService.java         # DHT22 sensor reader — launches Python script and parses output
 │   │   ├── SystemService.java      # System reads: CPU, RAM, SWAP, disk, temperature, uptime, IP, network speed
 │   │   └── WeatherService.java     # OpenWeatherMap Geocoding + One Call 3.0 HTTP client
 │   └── ui/
+│       ├── ColorScale.java         # Shared 5-step color scale (cyan → green → yellow → orange → red)
 │       ├── TileFactory.java        # Static factory for metric and progress tiles
 │       ├── WeatherWidget.java      # Top-right widget: temperature, wind, daily high/low
 │       └── NetworkWidget.java      # Top-left widget: upload/download speed and WiFi signal quality
+├── dht22.py                        # Python script that reads the DHT22 sensor
 ├── launch_dashboard.sh             # Bash script that sets up the graphical environment and launches the app
 ├── .env                            # API key and city config (not committed)
 └── pom.xml                         # Maven configuration with native dependencies for Linux-ARM
